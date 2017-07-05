@@ -9,21 +9,39 @@
 
     <body ng-controller="comparadorUsuariosController">
         <div class="content">
-            <form name="formUsers" ng-submit="compare(formUsers.$valid)" enctype="multipart/form-data" novalidate>
-                <div class="form-group">
-                    <label for="user1">Usuário 1</label>
-                    <input type="text" name="user1" ng-model="user1" class="form-control" id="user1" placeholder="Primeiro Usuário" required>
-                    <label class="inputError" ng-show="formUsers.user1.$dirty && formUsers.user1.$invalid"> Campo inválido! </label>
-                </div>
-                <div class="form-group">
-                    <label for="user2">Usuário 2</label>
-                    <input type="text" name="user2" ng-model="user2" class="form-control" id="user2" placeholder="Segundo Usuário" required>
-                    <label class="inputError" ng-show="formUsers.user2.$dirty && formUsers.user2.$invalid"> Campo inválido! </label>
-                </div>
-                <input type="submit" id="submit" value="Comparar" />
-            </form>
-            {{ erroReq }}
-            {{ usersInfo }}
+            <div class="">
+                <form name="formUsers" ng-submit="compareUsers(formUsers.$valid)" enctype="multipart/form-data" novalidate>
+                    <div class="form-group">
+                        <label for="user1">Usuário 1</label>
+                        <input type="text" name="user1" ng-model="user1" class="form-control" id="user1" placeholder="Primeiro Usuário" required>
+                        <label class="inputError" ng-show="formUsers.user1.$dirty && formUsers.user1.$invalid"> Campo inválido! </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="user2">Usuário 2</label>
+                        <input type="text" name="user2" ng-model="user2" class="form-control" id="user2" placeholder="Segundo Usuário" required>
+                        <label class="inputError" ng-show="formUsers.user2.$dirty && formUsers.user2.$invalid"> Campo inválido! </label>
+                    </div>
+                    <input type="submit" id="submit" value="Comparar" />
+                    {{ erroReq }}
+                </form>
+            </div>
+            <div ng-if="usersInfo" ng-repeat="user in usersInfo" class="result">
+                <img ng-src="{{ user.avatar_url }}" width="50" height="50">
+                <ul>
+                    <li>
+                        ID: {{ user.id }}
+                    </li>
+                    <li>
+                        Login: {{ user.login }}
+                    </li>
+                    <li ng-if="user.name">
+                        Nome: {{ user.name }}
+                    </li>
+                    <li>
+                        Followers: {{ user.followers }}
+                    </li>
+                </ul>
+            </div>
         </div>
     </body>
 </html>
