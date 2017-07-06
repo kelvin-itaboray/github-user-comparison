@@ -20,7 +20,7 @@
                             <label class="error" ng-show="formUsers.user1.$dirty && formUsers.user1.$invalid"> Campo inválido! </label>
                         </div>
                         <div class="col col-md-2 text-center">
-                            <h1>VS.</h1>
+                            <h2>VS.</h2>
                         </div>
                         <div class="col col-md-5 form-group">
                             <input type="text" name="user2" ng-model="user2" class="form-control" id="user2" placeholder="Segundo Usuário" required>
@@ -38,8 +38,8 @@
 
             <!-- Exibicao das informacoes -->
             <div class="row">
-                <div class="col col-md-6" ng-if="users" ng-repeat="user in users">
-                    <div class="panel panel-info">
+                <div class="col col-md-6" ng-if="users" ng-repeat="user in users | orderBy: 'index'">
+                    <div class="panel panel-default">
                         <div class="text-center">
                             <img ng-src="{{ user.avatar_url }}" width="50" height="50">
                         </div>

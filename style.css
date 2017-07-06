@@ -1,5 +1,6 @@
 .error {
 	color: red;
+	font-family: arial;
 }
 
 .winner {
@@ -8,6 +9,10 @@
 
 .submit {
 	margin: 0 0 25px 0;
+}
+
+h2{
+	font-weight: bold;	
 }
 
 img {

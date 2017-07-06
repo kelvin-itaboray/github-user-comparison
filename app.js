@@ -20,7 +20,6 @@ app.service('pointsService', function($http, $q) {
                     return points;
                 }
             }, function(error) {
-                console.log(error);
                 showError(error);
                 return error;
             });
@@ -51,6 +50,7 @@ app.service('userService', function($http, $q, pointsService) {
                     return pointsService.getPoints(url, response.data.public_repos, response.data.followers)
                         .then(function(points) {
                             user = {
+                                index: index,
                                 id: response.data.id,
                                 name: response.data.name,
                                 login: response.data.login,
@@ -62,14 +62,12 @@ app.service('userService', function($http, $q, pointsService) {
                             return user;
                         })
                         .catch(function(error) {
-                            console.error(error);
                             showError(error);
                             return error;
                         });
                 }
             })
             .catch(function(error) {
-                console.error(error);
                 showError(error);
                 return error;
             });
@@ -91,7 +89,6 @@ app.service('userService', function($http, $q, pointsService) {
                                     user.vencedor = response;
                                 })
                                 .catch(function(error) {
-                                    console.error(error);
                                     showError(error);
                                     return error;
                                 });
@@ -99,7 +96,6 @@ app.service('userService', function($http, $q, pointsService) {
                     }
                 })
                 .catch(function(error) {
-                    console.error(error);
                     showError(error);
                     return error;
                 });
@@ -131,7 +127,6 @@ app.controller('comparadorUsuariosController', function($scope, $http, $q, userS
 
     //Exibe vencedor
     $scope.showWinner = function(users, currentUser){
-        var deferred = $q.defer();
         var winners = 0;
         var isSame = true;
         angular.forEach(users, function(user, index) {
@@ -160,7 +155,6 @@ app.controller('comparadorUsuariosController', function($scope, $http, $q, userS
                     $scope.users = users;
                 })
                 .catch(function(error) {
-                    console.error(error);
                     showError(error);
                     $scope.erroReq = error;
                 });
