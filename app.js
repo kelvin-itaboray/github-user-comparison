@@ -3,7 +3,12 @@ var app = angular.module('ComparadorUsuarios', []);
 
 //Services
 app.service('pointsService', function($http, $q) {
+    /*Funcao para retornar a pontuacao de um determinado usuario
+        1 Follower = 2 pontos
+        1 Star = 5 pontos
+    */
     this.getPoints = function(userURL, repLength, followers) {
+        //Recebe a url a ser acessada
         var repURL = userURL+"/repos?per_page="+repLength;
         return $http.get(repURL)
             .then(function(response) {
@@ -16,9 +21,12 @@ app.service('pointsService', function($http, $q) {
                 }
             }, function(error) {
                 console.log(error);
+                showError(error);
+                return error;
             });
     }
 
+    //Funcao para atualizar campo vencedor de um determinado objeto usuario
     this.isWinner = function(users, currentUser) {
         var deferred = $q.defer();
         var currentUserPoints = currentUser.points;
@@ -33,6 +41,7 @@ app.service('pointsService', function($http, $q) {
 });
 
 app.service('userService', function($http, $q, pointsService) {
+    //Funcao para GET de apenas um usuario
     this.getUser = function(username, index) {
         var url = "https://api.github.com/users/" + username;
         var user = {};
@@ -51,16 +60,22 @@ app.service('userService', function($http, $q, pointsService) {
                                 vencedor: false
                             };
                             return user;
-                        }, function(error) {
-                            console.log(error);
+                        })
+                        .catch(function(error) {
+                            console.error(error);
+                            showError(error);
+                            return error;
                         });
                 }
-            }, function(error) {
-                console.log(error);
+            })
+            .catch(function(error) {
+                console.error(error);
+                showError(error);
+                return error;
             });
     }
 
-    
+    //Funcao para GET de todos os usuarios, apos receber usuarios, eh calculado quem eh o vencedor
     var self = this;
     this.getUsers = function(usernames) {
         var deferred = $q.defer();
@@ -74,40 +89,80 @@ app.service('userService', function($http, $q, pointsService) {
                             pointsService.isWinner(users, user)
                                 .then(function(response) {
                                     user.vencedor = response;
-                                }, function(error) {
-                                    $scope.reset();
+                                })
+                                .catch(function(error) {
+                                    console.error(error);
+                                    showError(error);
+                                    return error;
                                 });
                         });
                     }
-                }, function(error) {
-                    console.log(error);
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    showError(error);
+                    return error;
                 });
         });
         deferred.resolve(users);
         return deferred.promise;
     }
+
 });
 
 //Controller
-app.controller('comparadorUsuariosController', function($scope, $http, userService) {
+app.controller('comparadorUsuariosController', function($scope, $http, $q, userService) {
     $scope.formUsers = {};
     $scope.users = [];
-    $scope.validacao = '^[a-zA-Z ]+$';
+    $scope.winners = 0;
     $scope.erroReq = "";
 
-    $scope.reset = function(){
+    //Funcao de reinicializacao de valores
+    reset = function(){
         $scope.users = [];
         $scope.erroReq = "";
+        $scope.winners = 0;
     }
 
+    showError = function(error){
+        reset();
+        $scope.erroReq = error.messageStatus;
+    }
+
+    //Exibe vencedor
+    $scope.showWinner = function(users, currentUser){
+        var deferred = $q.defer();
+        var winners = 0;
+        var isSame = true;
+        angular.forEach(users, function(user, index) {
+            if(user.vencedor)
+                winners++;
+            if(user.id != currentUser.id)
+                isSame = false;
+        });
+
+        if(isSame && users.length > 1)
+            return "USUÁRIO REPETIDO";
+        else if(winners > 1)
+            return "EMPATE";
+        else if(winners === 1 && currentUser.vencedor)
+            return currentUser.login + " VENCEU";
+        else
+            return "";
+    }
+
+    //Funcao submit do formulario, no qual chama getUsers e calcula quem eh o vencedor
     $scope.compareUsers = function(isValid) {
         if(isValid) {
-            $scope.reset();
+            reset();
             userService.getUsers([$scope.user1, $scope.user2])
-                .then(function (response) {
-                    $scope.users = response;
-                }, function(error) {
-                    $scope.reset();
+                .then(function (users) {
+                    $scope.users = users;
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    showError(error);
+                    $scope.erroReq = error;
                 });
         }else{
             $scope.erroReq = "Dados dos campos são inválidos!";

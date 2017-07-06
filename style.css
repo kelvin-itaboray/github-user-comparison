@@ -1,0 +1,19 @@
+.error {
+	color: red;
+}
+
+.winner {
+	color: green;
+}
+
+.submit {
+	margin: 0 0 25px 0;
+}
+
+img {
+	margin: 10px !important;
+}
+
+input {
+	margin-top: 25px;
+}
