@@ -43,20 +43,20 @@
                         <div class="text-center">
                             <img ng-src="{{ user.avatar_url }}" width="50" height="50">
                         </div>
-                        <ul>
-                            <li>
+                        <ul class="list-group">
+                            <li class="list-group-item">
                                 ID: {{ user.id }}
                             </li>
-                            <li>
+                            <li class="list-group-item">
                                 Login: {{ user.login }}
                             </li>
-                            <li ng-if="user.name">
+                            <li class="list-group-item" ng-if="user.name">
                                 Nome: {{ user.name }}
                             </li>
-                            <li>
+                            <li class="list-group-item">
                                 Followers: {{ user.followers }}
                             </li>
-                            <li>
+                            <li class="list-group-item">
                                 Pontuação: {{ user.points }}
                             </li>
                         </ul>
