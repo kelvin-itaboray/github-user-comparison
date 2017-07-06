@@ -126,7 +126,7 @@ app.controller('comparadorUsuariosController', function($scope, $http, $q, userS
 
     showError = function(error){
         reset();
-        $scope.erroReq = error.statusText;
+        $scope.erroReq = "Erro " + error.status + ": " + error.statusText;
     }
 
     //Exibe vencedor
