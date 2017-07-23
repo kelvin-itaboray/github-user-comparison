@@ -1,5 +1,7 @@
+require('angular');
+
 //Module
-var app = angular.module('ComparadorUsuarios', []);
+let app = angular.module('ComparadorUsuarios', []);
 
 //Services
 app.service('pointsService', function($http, $q) {
