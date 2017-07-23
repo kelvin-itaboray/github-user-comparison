@@ -1,0 +1,23 @@
+{
+  "name": "github-user-comparison",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kelvin-itaboray/github-user-comparison.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kelvin-itaboray/github-user-comparison/issues"
+  },
+  "homepage": "https://github.com/kelvin-itaboray/github-user-comparison#readme",
+  "devDependencies": {
+    "webpack": "^3.3.0"
+  }
+}
