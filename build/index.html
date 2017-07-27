@@ -37,7 +37,7 @@
 
             <!-- Exibicao das informacoes -->
             <div class="row">
-                <div class="col col-md-6" ng-if="users" ng-repeat="user in users | orderBy: 'index'">
+                <div class="col col-md-6" ng-if="users" ng-repeat="user in users">
                     <div class="panel panel-default">
                         <div class="text-center">
                             <img ng-src="{{ user.avatar_url }}" width="50" height="50">

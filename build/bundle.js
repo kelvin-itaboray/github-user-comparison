@@ -80,54 +80,53 @@ __webpack_require__(2);
 let app = angular.module('ComparadorUsuarios', []);
 
 //Services
-app.service('pointsService', function($http, $q) {
+app.service('userService', function($http, $q) {
+
     /*Funcao para retornar a pontuacao de um determinado usuario
         1 Follower = 2 pontos
         1 Star = 5 pontos
     */
     this.getPoints = (userURL, repLength, followers) => {
         //Recebe a url a ser acessada
-        var repURL = userURL+"/repos?per_page="+repLength;
-        return $http.get(repURL)
-            .then(function(response) {
+        const repURL = userURL+"/repos?per_page="+repLength;
+        return $http.get(repURL).then(
+            response => {
                 if(response.status === 200){
-                    var points = followers*2;
-                    angular.forEach(response.data, function(rep, index) {
+                    let points = followers*2;
+                    for (let rep of response.data)
                         points += parseInt(rep.stargazers_count)*5;
-                    });
                     return points;
                 }
-            }, function(error) {
+            },
+            error => {
                 showError(error);
                 return error;
             });
     }
 
     //Funcao para atualizar campo vencedor de um determinado objeto usuario
-    this.isWinner = function(users, currentUser) {
-        var deferred = $q.defer();
-        var currentUserPoints = currentUser.points;
-        var isWinner = true;
-        angular.forEach(users, function(user, index){
+    this.isWinner = (users, currentUser) => {
+        let deferred = $q.defer();
+        let currentUserPoints = currentUser.points;
+        let isWinner = true;
+        for(let user of users) {
             if(currentUserPoints < user.points)
                 isWinner = false;
-        });
+        }
         deferred.resolve(isWinner);
         return deferred.promise;
-    };
-});
+    }
 
-app.service('userService', function($http, $q, pointsService) {
     //Funcao para GET de apenas um usuario
-    this.getUser = function(username, index) {
-        var url = "https://api.github.com/users/" + username;
-        var user = {};
+    this.getUser = (username, index) => {
+        const url = "https://api.github.com/users/" + username;
+        let user = {};
         return $http.get(url)
-            .then(function(response) {
+            .then(response => {
                 if(response.status === 200){
-                    return pointsService.getPoints(url, response.data.public_repos, response.data.followers)
-                        .then(function(points) {
-                            user = {
+                    return self.getPoints(url, response.data.public_repos, response.data.followers)
+                        .then(points => {
+                            return {
                                 index: index,
                                 id: response.data.id,
                                 name: response.data.name,
@@ -137,82 +136,78 @@ app.service('userService', function($http, $q, pointsService) {
                                 points: points,
                                 vencedor: false
                             };
-                            return user;
                         })
-                        .catch(function(error) {
+                        .catch(error => {
                             showError(error);
                             return error;
                         });
                 }
             })
-            .catch(function(error) {
+            .catch(error => {
                 showError(error);
                 return error;
             });
     }
 
     //Funcao para GET de todos os usuarios, apos receber usuarios, eh calculado quem eh o vencedor
-    var self = this;
-    this.getUsers = function(usernames) {
-        var deferred = $q.defer();
-        var users = [];
-        angular.forEach(usernames, function(username, index) {
+    const self = this;
+    this.getUsers = usernames => {
+        let deferred = $q.defer();
+        let users = [];
+        for(let [index, username] of Object.entries(usernames)) {
             self.getUser(username, index)
-                .then(function(response) {
+                .then(response => {
                     users.push(response);
                     if(users.length == usernames.length){
-                        angular.forEach(users, function(user, index) {
-                            pointsService.isWinner(users, user)
-                                .then(function(response) {
+                        for(let user of users) {
+                            self.isWinner(users, user)
+                                .then(response => {
                                     user.vencedor = response;
                                 })
-                                .catch(function(error) {
+                                .catch(error => {
                                     showError(error);
                                     return error;
                                 });
-                        });
+                        }
                     }
                 })
-                .catch(function(error) {
+                .catch(error => {
                     showError(error);
                     return error;
                 });
-        });
+        }
         deferred.resolve(users);
         return deferred.promise;
     }
-
 });
 
 //Controller
 app.controller('comparadorUsuariosController', function($scope, $http, $q, userService) {
     $scope.formUsers = {};
     $scope.users = [];
-    $scope.winners = 0;
     $scope.erroReq = "";
 
     //Funcao de reinicializacao de valores
-    reset = function(){
+    reset = () => {
         $scope.users = [];
         $scope.erroReq = "";
-        $scope.winners = 0;
     }
 
-    showError = function(error){
+    showError = error => {
         reset();
         $scope.erroReq = "Erro " + error.status + ": " + error.statusText;
     }
 
     //Exibe vencedor
-    $scope.showWinner = function(users, currentUser){
-        var winners = 0;
-        var isSame = true;
-        angular.forEach(users, function(user, index) {
+    $scope.showWinner = (users, currentUser) => {
+        let winners = 0;
+        let isSame = true;
+        for(let user of users) {
             if(user.vencedor)
                 winners++;
             if(user.id != currentUser.id)
                 isSame = false;
-        });
+        }
 
         if(isSame && users.length > 1)
             return "USUÁRIO REPETIDO";
@@ -225,14 +220,14 @@ app.controller('comparadorUsuariosController', function($scope, $http, $q, userS
     }
 
     //Funcao submit do formulario, no qual chama getUsers e calcula quem eh o vencedor
-    $scope.compareUsers = function(isValid) {
+    $scope.compareUsers = isValid => {
         if(isValid) {
             reset();
             userService.getUsers([$scope.user1, $scope.user2])
-                .then(function (users) {
+                .then(users => {
                     $scope.users = users;
                 })
-                .catch(function(error) {
+                .catch(error => {
                     showError(error);
                     $scope.erroReq = error;
                 });
